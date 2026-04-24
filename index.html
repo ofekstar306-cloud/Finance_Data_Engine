@@ -3,240 +3,191 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>מערכת מיזוג נתונים פיננסיים - גרסה סופית</title>
+    <title>DataFusion Pro | מערכת מיזוג פיננסית</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+ 
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: { sans: ['Assistant', 'sans-serif'] },
                     colors: {
-                        navy: { 700: '#1e3a8a', 800: '#1e293b', 900: '#0f172a' }
+                        cyber: { 
+                            bg: '#050914', 
+                            card: 'rgba(17, 25, 40, 0.75)',
+                            border: 'rgba(255, 255, 255, 0.1)',
+                            accent: '#00f2fe',
+                            accentHover: '#4facfe'
+                        }
+                    },
+                    animation: {
+                        'slide-in': 'slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'glow-pulse': 'glowPulse 2s infinite'
+                    },
+                    keyframes: {
+                        slideIn: {
+                            '0%': { transform: 'translateY(100%)', opacity: 0 },
+                            '100%': { transform: 'translateY(0)', opacity: 1 }
+                        },
+                        glowPulse: {
+                            '0%, 100%': { boxShadow: '0 0 10px rgba(0, 242, 254, 0.2)' },
+                            '50%': { boxShadow: '0 0 25px rgba(0, 242, 254, 0.6)' }
+                        }
                     }
                 }
             }
         }
     </script>
-
+ 
     <style>
-        .custom-scrollbar::-webkit-scrollbar { height: 8px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        .spinner { animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        body {
+            background-color: #050914;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(20, 40, 100, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 85% 30%, rgba(0, 242, 254, 0.1) 0%, transparent 50%);
+            background-attachment: fixed;
+        }
+        
+        .glass-panel {
+            background: theme('colors.cyber.card');
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid theme('colors.cyber.border');
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .cyber-input {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid theme('colors.cyber.border');
+            color: #e2e8f0;
+            transition: all 0.3s ease;
+        }
+        
+        .cyber-input:focus {
+            border-color: theme('colors.cyber.accent');
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.2);
+            outline: none;
+        }
+
+        /* סרגל גלילה עתידני */
+        .custom-scrollbar::-webkit-scrollbar { height: 6px; width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: theme('colors.cyber.accent'); border-radius: 4px; }
+        
+        /* איקון לוח שנה מותאם לדרק מוד */
+        ::-webkit-calendar-picker-indicator { filter: invert(1) opacity(0.7); cursor: pointer; }
+        
+        .toast-enter { animation: slideIn 0.3s ease-out forwards; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col font-sans">
-
-    <header class="bg-navy-900 text-white shadow-lg">
-        <div class="max-w-5xl mx-auto px-4 py-8">
-            <h1 class="text-3xl font-bold flex items-center gap-3 text-emerald-400">
-                <i class="fa-solid fa-chart-line"></i>
-                <span class="text-white">מיזוג נתונים פיננסיים</span>
+<body class="text-slate-300 antialiased min-h-screen flex flex-col font-sans relative overflow-x-hidden">
+ 
+    <header class="border-b border-white/10 bg-black/20 backdrop-blur-md sticky top-0 z-40">
+        <div class="max-w-5xl mx-auto px-4 py-6">
+            <h1 class="text-3xl font-black flex items-center gap-3 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">
+                <i class="fa-solid fa-layer-group text-cyan-400"></i>
+                DataFusion Pro
             </h1>
-            <p class="text-slate-400 mt-2">משיכת מחירים היסטוריים, נרמול תאריכים וייצוא ל-CSV</p>
+            <p class="text-slate-400 mt-2 text-sm tracking-wider">SYSTEM ARCHITECTURE // FINANCIAL DATA MERGER</p>
         </div>
     </header>
-
-    <main class="flex-grow max-w-5xl mx-auto px-4 py-8 w-full">
+ 
+    <main class="flex-grow max-w-5xl mx-auto px-4 py-10 w-full flex flex-col gap-8">
         
-        <div class="bg-white rounded-2xl shadow-xl border border-slate-200 p-6 md:p-10 mb-10 transition-all">
+        <div class="glass-panel rounded-2xl p-8 transition-all">
+            <div class="flex items-center gap-3 mb-8 border-b border-white/10 pb-4">
+                <i class="fa-solid fa-terminal text-cyan-400"></i>
+                <h2 class="text-xl font-bold text-white">הגדרת פרמטרים לייצוא</h2>
+            </div>
+
             <form id="dataForm" class="space-y-8">
-                
                 <div>
-                    <label for="tickers" class="block text-sm font-bold text-slate-700 mb-3">סימולי מניות (למשל: AAPL, TSLA, MSFT)</label>
-                    <input type="text" id="tickers" name="tickers" placeholder="הפרד באמצעות פסיקים..." required
-                        class="w-full px-5 py-4 rounded-xl border-2 border-slate-100 focus:ring-4 focus:ring-navy-700/10 focus:border-navy-700 transition-all outline-none text-left font-mono" dir="ltr">
+                    <label for="tickers" class="block text-sm font-bold text-cyan-300 mb-3 tracking-wide">סימולי מניות (TICKERS)</label>
+                    <input type="text" id="tickers" name="tickers" placeholder="AAPL, TSLA, MSFT..." required
+                        class="w-full px-5 py-4 rounded-xl cyber-input font-mono text-lg placeholder-slate-600" dir="ltr">
                 </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+ 
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
-                        <label for="startDate" class="block text-sm font-bold text-slate-700 mb-3 text-right">תאריך התחלה</label>
-                        <input type="date" id="startDate" name="startDate" required
-                            class="w-full px-5 py-4 rounded-xl border-2 border-slate-100 focus:ring-4 focus:ring-navy-700/10 focus:border-navy-700 transition-all outline-none">
+                        <label for="startDate" class="block text-sm font-bold text-cyan-300 mb-3 text-right">תאריך התחלה</label>
+                        <input type="date" id="startDate" name="startDate" required class="w-full px-5 py-4 rounded-xl cyber-input font-mono">
                     </div>
-                    
                     <div>
-                        <label for="endDate" class="block text-sm font-bold text-slate-700 mb-3 text-right">תאריך סיום</label>
-                        <input type="date" id="endDate" name="endDate" required
-                            class="w-full px-5 py-4 rounded-xl border-2 border-slate-100 focus:ring-4 focus:ring-navy-700/10 focus:border-navy-700 transition-all outline-none">
+                        <label for="endDate" class="block text-sm font-bold text-cyan-300 mb-3 text-right">תאריך סיום</label>
+                        <input type="date" id="endDate" name="endDate" required class="w-full px-5 py-4 rounded-xl cyber-input font-mono">
                     </div>
-
                     <div>
-                        <label for="frequency" class="block text-sm font-bold text-slate-700 mb-3 text-right">תדירות דגימה</label>
-                        <select id="frequency" name="frequency" required
-                            class="w-full px-5 py-4 rounded-xl border-2 border-slate-100 focus:ring-4 focus:ring-navy-700/10 focus:border-navy-700 transition-all outline-none bg-white">
-                            <option value="1d">יומי</option>
-                            <option value="1wk">שבועי</option>
-                            <option value="1mo">חודשי (מנורמל ל-1 בחודש)</option>
+                        <label for="frequency" class="block text-sm font-bold text-cyan-300 mb-3 text-right">תדירות דגימה</label>
+                        <select id="frequency" name="frequency" required class="w-full px-5 py-4 rounded-xl cyber-input bg-cyber-bg font-mono">
+                            <option value="1d">1D (יומי)</option>
+                            <option value="1wk">1W (שבועי)</option>
+                            <option value="1mo">1M (חודשי)</option>
                         </select>
                     </div>
                 </div>
-
-                <div class="pt-6">
+ 
+                <div class="pt-4">
                     <button type="submit" id="submitBtn" 
-                        class="w-full md:w-auto px-10 py-4 bg-navy-800 hover:bg-navy-900 text-white font-bold rounded-xl shadow-lg hover:shadow-navy-900/20 transition-all flex items-center justify-center gap-3">
-                        <span>הפעל מיזוג נתונים</span>
-                        <i class="fa-solid fa-bolt"></i>
+                        class="w-full px-10 py-5 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-black text-lg rounded-xl shadow-lg transition-all transform hover:-translate-y-1 flex items-center justify-center gap-3 animate-glow-pulse">
+                        <span>התחל עיבוד נתונים</span>
+                        <i class="fa-solid fa-microchip"></i>
                     </button>
                 </div>
             </form>
         </div>
-
-        <div id="loadingState" class="hidden flex flex-col items-center justify-center py-20 animate-pulse">
-            <div class="relative">
-                <i class="fa-solid fa-circle-notch spinner text-6xl text-navy-700"></i>
-                <i class="fa-solid fa-database absolute inset-0 flex items-center justify-center text-xl text-navy-700"></i>
+ 
+        <div id="resultsSection" class="hidden glass-panel rounded-2xl overflow-hidden flex-col">
+            <div class="bg-cyan-900/30 px-8 py-5 border-b border-cyan-500/20 flex justify-between items-center">
+                <h2 class="text-lg font-bold text-cyan-300 flex items-center gap-2">
+                    <i class="fa-solid fa-table-list"></i> פלט נתונים (תצוגה מקדימה)
+                </h2>
+                <span class="text-xs bg-cyan-950 text-cyan-400 border border-cyan-800 px-3 py-1 rounded-full font-mono">HEAD -n 5</span>
             </div>
-            <h3 class="text-2xl font-bold text-slate-800 mt-6">מעבד וממזג נתונים...</h3>
-            <p class="text-slate-500 mt-2">אנחנו מושכים נתונים מ-Yahoo Finance ו-Google Finance</p>
-        </div>
-
-        <div id="resultsSection" class="hidden space-y-6">
-            <div class="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
-                <div class="bg-emerald-50 px-8 py-5 border-b border-emerald-100 flex justify-between items-center">
-                    <h2 class="text-lg font-bold text-emerald-900 flex items-center gap-2">
-                        <i class="fa-solid fa-square-poll-vertical"></i> תצוגה מקדימה של המיזוג
-                    </h2>
-                    <span class="text-xs bg-emerald-200 text-emerald-800 px-3 py-1 rounded-full font-bold">5 שורות ראשונות</span>
+            
+            <div class="p-8">
+                <div class="overflow-x-auto custom-scrollbar border border-white/10 rounded-xl bg-black/40">
+                    <table id="previewTable" class="w-full text-right table-auto">
+                        <thead id="tableHead" class="bg-white/5 text-cyan-400 text-xs uppercase tracking-wider font-bold border-b border-white/10"></thead>
+                        <tbody id="tableBody" class="text-sm text-slate-300 divide-y divide-white/5 font-mono"></tbody>
+                    </table>
                 </div>
-                
-                <div class="p-8">
-                    <div class="overflow-x-auto custom-scrollbar border border-slate-100 rounded-xl">
-                        <table id="previewTable" class="w-full text-right table-auto">
-                            <thead id="tableHead" class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider font-bold"></thead>
-                            <tbody id="tableBody" class="text-sm text-slate-700 divide-y divide-slate-100"></tbody>
-                        </table>
-                    </div>
-
-                    <div class="mt-10 flex flex-col sm:flex-row items-center gap-4">
-                        <a id="downloadBtn" href="#" target="_blank"
-                            class="w-full sm:w-auto px-10 py-5 bg-emerald-600 hover:bg-emerald-500 text-white font-black rounded-xl shadow-xl transition-all transform hover:-translate-y-1 flex items-center justify-center gap-4 text-lg">
-                            <i class="fa-solid fa-file-csv"></i>
-                            <span>הורד קובץ CSV מלא</span>
-                        </a>
-                        <p class="text-slate-400 text-sm">הקובץ נשמר אוטומטית ב-Google Drive שלך.</p>
-                    </div>
+ 
+                <div class="mt-8 flex flex-col sm:flex-row items-center gap-4">
+                    <a id="downloadBtn" href="#" target="_blank"
+                        class="w-full sm:w-auto px-10 py-4 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-3">
+                        <i class="fa-solid fa-cloud-arrow-down text-cyan-400"></i>
+                        <span>הורד קובץ CSV</span>
+                    </a>
+                    <p class="text-slate-500 text-sm flex items-center gap-2">
+                        <i class="fa-solid fa-circle-check text-emerald-500"></i> הקובץ נשמר ב-Drive תחת "אחרונים"
+                    </p>
                 </div>
             </div>
         </div>
     </main>
-
-    <div id="errorModal" class="hidden fixed inset-0 bg-navy-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-6">
-        <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 border-t-8 border-red-500">
-            <div class="flex items-center gap-4 text-red-600 mb-6">
-                <i class="fa-solid fa-triangle-exclamation text-4xl"></i>
-                <h3 class="text-2xl font-black">שגיאה בתהליך</h3>
-            </div>
-            <div id="errorMessage" class="text-slate-600 mb-8 bg-red-50 p-4 rounded-xl font-mono text-sm break-words"></div>
-            <button onclick="closeErrorModal()" class="w-full py-4 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-all">
-                הבנתי, סגור
-            </button>
-        </div>
-    </div>
-
+ 
+    <div id="toastContainer" class="fixed bottom-6 right-6 left-6 md:left-auto md:w-96 z-50 flex flex-col gap-3 pointer-events-none"></div>
+ 
     <script>
         const form = document.getElementById('dataForm');
         const submitBtn = document.getElementById('submitBtn');
-        const loadingState = document.getElementById('loadingState');
         const resultsSection = document.getElementById('resultsSection');
         const tableHead = document.getElementById('tableHead');
         const tableBody = document.getElementById('tableBody');
         const downloadBtn = document.getElementById('downloadBtn');
-        const errorModal = document.getElementById('errorModal');
-        const errorMessage = document.getElementById('errorMessage');
-
-        // הקישור החדש שסיפקת
-        const API_URL = 'https://script.google.com/macros/s/AKfycbwv7pYAPI8x0FJsuMsGyUW2Bwh-oBXXaiaYn5wD2pnjX7FiIsJSj5cNZNHQRsR4D4so/exec';
-
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            resultsSection.classList.add('hidden');
-            loadingState.classList.remove('hidden');
-            loadingState.classList.add('flex');
-            submitBtn.disabled = true;
-            submitBtn.classList.add('opacity-50');
-
-            const tickers = document.getElementById('tickers').value.split(',').map(t => t.trim().toUpperCase()).filter(t => t);
-            const payload = {
-                tickers: tickers,
-                startDate: document.getElementById('startDate').value,
-                endDate: document.getElementById('endDate').value,
-                frequency: document.getElementById('frequency').value
-            };
-
-            try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify(payload),
-                    redirect: 'follow'
-                });
-
-                if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
-                const data = await response.json();
-
-                if (data.status === 'success') {
-                    renderTable(data.previewData);
-                    downloadBtn.href = data.downloadUrl;
-                    loadingState.classList.add('hidden');
-                    resultsSection.classList.remove('hidden');
-                } else {
-                    throw new Error(data.message || 'שגיאה לא ידועה בשרת');
-                }
-            } catch (err) {
-                showError(err.message);
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.classList.remove('opacity-50');
-                loadingState.classList.add('hidden');
-            }
-        });
-
-        function renderTable(data) {
-            tableHead.innerHTML = ''; tableBody.innerHTML = '';
-            if (!data || data.length === 0) return;
-
-            const headerRow = document.createElement('tr');
-            data[0].forEach(h => {
-                const th = document.createElement('th');
-                th.className = 'px-6 py-4 border-b border-slate-100';
-                th.innerHTML = `<span dir="ltr">${h}</span>`;
-                headerRow.appendChild(th);
-            });
-            tableHead.appendChild(headerRow);
-
-            data.slice(1, 6).forEach(row => {
-                const tr = document.createElement('tr');
-                row.forEach((cell, i) => {
-                    const td = document.createElement('td');
-                    td.className = 'px-6 py-4';
-                    td.innerHTML = `<span dir="ltr">${i > 0 && cell !== "" ? parseFloat(cell).toFixed(2) : cell}</span>`;
-                    tr.appendChild(td);
-                });
-                tableBody.appendChild(tr);
-            });
-        }
-
-        function showError(msg) {
-            errorMessage.innerText = msg;
-            errorModal.classList.remove('hidden');
-            loadingState.classList.add('hidden');
-        }
-
-        function closeErrorModal() { errorModal.classList.add('hidden'); }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            const today = new Date();
-            const yearAgo = new Date(); yearAgo.setFullYear(today.getFullYear() - 1);
-            document.getElementById('endDate').valueAsDate = today;
-            document.getElementById('startDate').valueAsDate = yearAgo;
-        });
-    </script>
-</body>
-</html>
+        const toastContainer = document.getElementById('toastContainer');
+ 
+        // פונקציית Toast להודעות משתמש עתידניות
+        function showToast(title, message, type = 'info') {
+            const toast = document.createElement('div');
+            
+            let icon, bgColor, borderColor, textColor;
+            if (type === 'success') {
+                icon = 'fa-circle-check'; bgColor = 'bg-emerald-950/90'; borderColor = 'border-emerald-500/50'; textColor = 'text-emerald-400';
+            } else if (type === 'error') {
+                icon = 'fa-triangle-exclamation'; bgColor = 'bg-red-950/90'; borderColor = 'border-red-500/50'; textColor = 'text-red-400';
+            } else {
+                icon = 'fa-circle-notch fa-spin'; bgColor = 'bg-cyan-950/90'; borderColor = 'border-cyan-500/50
