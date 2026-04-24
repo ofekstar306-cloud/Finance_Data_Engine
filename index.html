@@ -118,8 +118,8 @@
     </div>
 
     <script>
-        // Updated Google Apps Script Web App URL
-        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyFCFo1RdNIuB0UXAbmll5mIF5sMU4zq37slQOudfWAEjQePHrYsLOTPY68NJTvH-Hn/exec';
+        // ה-URL החדש והמעודכן לשרת ה-Google Apps Script שלך
+        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwCMbomQyKxryIuGvGhFzV6r1kzIQUFzfO6uXWkwCBhwBu73Ekv71zZIJ5zLBbBQSYb/exec';
 
         document.getElementById('stockForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -131,7 +131,7 @@
             let startDateInput = document.getElementById('startDate').value;
             let endDateInput = document.getElementById('endDate').value;
 
-            // Client-side date validation
+            // בדיקת ולידציה של תאריכים בצד הלקוח
             if (new Date(startDateInput) > new Date(endDateInput)) {
                 alert("זיהינו שתאריך ההתחלה מאוחר מתאריך הסיום. המערכת סידרה אותם אוטומטית.");
                 let temp = startDateInput;
@@ -146,7 +146,7 @@
                 frequency: document.getElementById('frequency').value
             };
 
-            // Set loading state
+            // שינוי מצב כפתור לטעינה
             btn.disabled = true;
             btnText.innerText = "מושך נתונים...";
             loader.classList.remove('hidden');
@@ -154,7 +154,7 @@
             status.innerText = "השרת מעבד את הנתונים ומאמת את המניות...";
 
             try {
-                // Send request to the Google Apps Script server
+                // שליחת הבקשה לשרת
                 const response = await fetch(WEB_APP_URL, {
                     method: 'POST',
                     body: JSON.stringify(payload)
@@ -162,11 +162,11 @@
 
                 const csvData = await response.text();
 
-                // Handle server errors
+                // טיפול בשגיאות מהשרת
                 if (csvData.startsWith("Error")) {
                     alert(csvData);
                 } else {
-                    // Trigger local file download
+                    // יצירת קובץ CSV להורדה מקומית ישירות בדפדפן
                     const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
                     const url = window.URL.createObjectURL(blob);
                     const a = document.createElement("a");
@@ -180,9 +180,9 @@
                     status.innerText = "ההורדה הושלמה בהצלחה! בדוק את תיקיית ההורדות שלך.";
                 }
             } catch (err) {
-                alert("אירעה שגיאת תקשורת. וודא שהסקריפט מוגדר נכון.");
+                alert("אירעה שגיאת תקשורת. וודא שהסקריפט מוגדר נכון ושאישרת הרשאות.");
             } finally {
-                // Reset UI
+                // איפוס ממשק
                 btn.disabled = false;
                 btnText.innerText = "הורד קובץ CSV למחשב";
                 loader.classList.add('hidden');
@@ -190,7 +190,7 @@
             }
         });
 
-        // Set default dates on load (6 months back)
+        // הגדרת תאריכי ברירת מחדל בעת טעינת האתר (חצי שנה אחורה)
         const today = new Date();
         document.getElementById('endDate').value = today.toISOString().split('T')[0];
         const lastSixMonths = new Date();
