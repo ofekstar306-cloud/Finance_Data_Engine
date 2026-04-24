@@ -3,43 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stock Data To Sheets | Ofek Cohen</title>
+    <title>מפיק דוחות פיננסיים | מערכת מאוחדת</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Assistant', sans-serif; }
-        .finance-gradient { background: linear-gradient(135deg, #1e293b 0%, #334155 100%); }
+        .finance-gradient { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
+        .fade-in { animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen flex items-center justify-center p-4">
+<body class="bg-slate-100 min-h-screen flex items-center justify-center p-4">
 
-    <div class="max-w-2xl w-full bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-200">
-        <div class="finance-gradient p-8 text-white">
-            <h1 class="text-3xl font-bold mb-2">מפיק דוחות מניות</h1>
-            <p class="text-slate-300">איחוד נתוני מניות לגיליון Google Sheets</p>
+    <div class="max-w-2xl w-full bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-200 fade-in">
+        
+        <div class="finance-gradient p-10 text-white text-center">
+            <h1 class="text-4xl font-bold mb-3">דאשבורד מניות חכם</h1>
+            <p class="text-slate-400 text-lg">שליפת נתונים מ-Yahoo ו-Google לאיחוד בגיליון אקסל</p>
         </div>
 
         <form id="stockForm" class="p-8 space-y-6">
+            
             <div>
-                <label class="block text-slate-700 font-bold mb-2">סימולי מניות:</label>
-                <input type="text" id="tickers" placeholder="TSLA, AAPL, AMZN" required
-                    class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-900 outline-none transition-all">
+                <label class="block text-slate-700 font-bold mb-2">סימולי מניות (למשל: TSLA, AAPL, NVDA):</label>
+                <input type="text" id="tickers" placeholder="הפרד בפסיקים..." required
+                    class="w-full px-5 py-4 rounded-xl border border-slate-300 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-600 outline-none transition-all text-lg">
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <label class="block text-slate-700 font-bold mb-2">תאריך התחלה:</label>
-                    <input type="date" id="startDate" required class="w-full px-4 py-3 rounded-lg border border-slate-300 outline-none">
+                    <input type="date" id="startDate" required
+                        class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-600 outline-none">
                 </div>
                 <div>
                     <label class="block text-slate-700 font-bold mb-2">תאריך סיום:</label>
-                    <input type="date" id="endDate" required class="w-full px-4 py-3 rounded-lg border border-slate-300 outline-none">
+                    <input type="date" id="endDate" required
+                        class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-600 outline-none">
                 </div>
             </div>
 
             <div>
-                <label class="block text-slate-700 font-bold mb-2">תדירות:</label>
-                <select id="frequency" class="w-full px-4 py-3 rounded-lg border border-slate-300 outline-none bg-white">
+                <label class="block text-slate-700 font-bold mb-2">תדירות דגימה:</label>
+                <select id="frequency" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-600 outline-none bg-white">
                     <option value="daily">יומי (Daily)</option>
                     <option value="weekly">שבועי (Weekly)</option>
                     <option value="monthly">חודשי (Monthly)</option>
@@ -47,32 +53,43 @@
             </div>
 
             <button type="submit" id="submitBtn" 
-                class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-4 rounded-xl shadow-lg transition-all flex justify-center items-center">
-                <span id="btnText">הפק גיליון נתונים</span>
-                <div id="loader" class="hidden ml-3 animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></div>
+                class="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold py-5 rounded-2xl shadow-xl transition-all transform hover:scale-[1.02] active:scale-95 flex justify-center items-center text-xl">
+                <span id="btnText">הפק דוח מאוחד</span>
+                <div id="loader" class="hidden mr-3 animate-spin h-6 w-6 border-4 border-white border-t-transparent rounded-full"></div>
             </button>
         </form>
 
-        <div id="resultArea" class="hidden p-8 border-t border-slate-100 bg-slate-50 text-center">
-            <p class="text-green-600 font-bold mb-2">✓ הבקשה נשלחה בהצלחה!</p>
-            <p class="text-sm text-slate-600 mb-4">הגיליון נוצר ב-Google Drive שלך.</p>
+        <div id="resultArea" class="hidden p-10 border-t border-slate-100 bg-slate-50 text-center fade-in">
+            <div class="mb-6">
+                <div class="bg-green-100 text-green-700 p-4 rounded-xl inline-block mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span class="font-bold text-lg">הדוח נוצר בהצלחה!</span>
+                </div>
+                <p class="text-slate-600">הגיליון החדש מחכה לך ב-Google Drive שלך תחת "אחרונים".</p>
+            </div>
+            
             <a href="https://drive.google.com/drive/recent" target="_blank" 
-                class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full transition-colors">
-                למעבר ל-Google Drive
+                class="inline-block bg-slate-800 hover:bg-slate-900 text-white text-lg font-bold py-4 px-12 rounded-2xl shadow-lg transition-colors">
+                פתח את ה-Drive לצפייה בקובץ
             </a>
         </div>
     </div>
 
     <script>
-        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxtcXj8szQHHEZNsBHFtL1ybPjYM69m5e4DFqRpGXAyKlXPeJP7njQaeqs8447yKCqu/exec';
+        // הכתובת המעודכנת שסיפקת
+        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbx7iswbrGoaPrjQE_9ISwqFS9gup2OU1VdaDc8qZKIe1u1pRhK81_Ir9Sm5By0F2qTf/exec';
 
         document.getElementById('stockForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+
             const submitBtn = document.getElementById('submitBtn');
             const btnText = document.getElementById('btnText');
             const loader = document.getElementById('loader');
             const resultArea = document.getElementById('resultArea');
 
+            // הכנת נתונים לשליחה
             const payload = {
                 tickers: document.getElementById('tickers').value.split(',').map(s => s.trim().toUpperCase()),
                 startDate: document.getElementById('startDate').value,
@@ -80,36 +97,44 @@
                 frequency: document.getElementById('frequency').value
             };
 
+            // עדכון מצב כפתור
             submitBtn.disabled = true;
-            btnText.innerText = "מעבד נתונים...";
+            btnText.innerText = "מתקשר עם גוגל שרת...";
             loader.classList.remove('hidden');
+            resultArea.classList.add('hidden');
 
             try {
-                // שליחה בפורמט text/plain למניעת שגיאות Preflight CORS
+                // שליחה ל-Google Apps Script
+                // הערה: בגלל אילוצי אבטחה של גוגל (CORS), התשובה חוזרת כ-"opaque"
+                // לכן אנו מניחים הצלחה אם הבקשה נשלחה ללא שגיאת רשת
                 await fetch(WEB_APP_URL, {
                     method: 'POST',
-                    mode: 'no-cors', 
+                    mode: 'no-cors',
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify(payload)
                 });
 
-                // בגלל no-cors לא ניתן לקרוא את ה-JSON, אבל אם הגענו לכאן הבקשה נשלחה
+                // הצגת אזור ההצלחה
                 resultArea.classList.remove('hidden');
+                resultArea.scrollIntoView({ behavior: 'smooth' });
+
             } catch (error) {
-                alert("שגיאה בחיבור לשרת.");
+                console.error("Fetch error:", error);
+                alert("אירעה שגיאה בשליחת הנתונים. וודא שהסקריפט מפורסם כראוי.");
             } finally {
                 submitBtn.disabled = false;
-                btnText.innerText = "הפק גיליון נתונים";
+                btnText.innerText = "הפק דוח מאוחד";
                 loader.classList.add('hidden');
             }
         });
 
-        // תאריכי ברירת מחדל
-        const today = new Date().toISOString().split('T')[0];
-        const lastMonth = new Date();
-        lastMonth.setMonth(lastMonth.getMonth() - 1);
-        document.getElementById('endDate').value = today;
-        document.getElementById('startDate').value = lastMonth.toISOString().split('T')[0];
+        // הגדרת תאריכי ברירת מחדל (30 יום אחורה)
+        const today = new Date();
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(today.getDate() - 30);
+        
+        document.getElementById('endDate').value = today.toISOString().split('T')[0];
+        document.getElementById('startDate').value = thirtyDaysAgo.toISOString().split('T')[0];
     </script>
 </body>
 </html>
