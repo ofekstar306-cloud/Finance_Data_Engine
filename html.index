@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>מחלץ נתוני מניות | Yahoo Finance</title>
+  <!-- טעינת Tailwind CSS ישירות מ-CDN לשימוש בקובץ אחד ללא בנייה מוקדמת -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* גופן מערכת נקי ומהיר */
+    body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    /* אפקט מעבר עדין לכל הרכיבים */
+    .transition-all { transition-property: all; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 200ms; }
+  </style>
+</head>
+<body class="bg-slate-900 min-h-screen flex items-center justify-center p-4 text-slate-200">
+
+  <!-- קונטיינר ראשי: כרטיס עם גבול עדין וצל עמוק -->
+  <main class="w-full max-w-md bg-slate-800 rounded-2xl shadow-2xl border border-slate-700 overflow-hidden">
+    
+    <!-- כותרת עם אייקון וצבע כחול פיננסי -->
+    <div class="bg-gradient-to-r from-blue-900 to-slate-800 p-6 border-b border-slate-700">
+      <h1 class="text-2xl font-bold text-blue-300 flex items-center gap-2">
+        📊 מחלץ נתוני מניות
+      </h1>
+      <p class="text-slate-400 text-sm mt-1">משיכת היסטוריה, איחוד לטבלה ויצירת גיליון אוטומטי</p>
+    </div>
+
+    <form id="stockForm" class="p-6 space-y-5">
+      
+      <!-- שדה סימולי מניות -->
+      <div>
+        <label for="tickers" class="block text-sm font-medium text-slate-300 mb-2">סימולי מניות (מופרדים בפסיק)</label>
+        <input type="text" id="tickers" placeholder="לדוגמה: TSLA, AAPL, AMZN, NVDA" required
+               class="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+      </div>
+
+      <!-- שדות תאריך -->
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label for="startDate" class="block text-sm font-medium text-slate-300 mb-2">תאריך התחלה</label>
+          <input type="date" id="startDate" required
+                 class="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all">
+        </div>
+        <div>
+          <label for="endDate" class="block text-sm font-medium text-slate-300 mb-2">תאריך סיום</label>
+          <input type="date" id="endDate" required
+                 class="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all">
+        </div>
+      </div>
+
+      <!-- תפריט תדירות -->
+      <div>
+        <label for="frequency" class="block text-sm font-medium text-slate-300 mb-2">תדירות נתונים</label>
+        <select id="frequency" class="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all">
+          <option value="daily">יומי (Daily)</option>
+          <option value="weekly">שבועי (Weekly)</option>
+          <option value="monthly">חודשי (Monthly)</option>
+        </select>
+      </div>
+
+      <!-- כפתור שליחה -->
+      <button type="submit" id="submitBtn"
+              class="w-full bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white font-semibold py-3 rounded-lg shadow-lg shadow-blue-900/30 transition-all flex items-center justify-center gap-2">
+        <span>🚀 שלח בקשה לשרת</span>
+      </button>
+
+      <!-- אזור סטטוס / תוצאה (מוסתר כברירת מחדל) -->
+      <div id="statusArea" class="hidden mt-4"></div>
+
+    </form>
+  </main>
+
+  <script>
+    // ===================================================================
+    // הגדרות ראשוניות ואיתחול תאריכים
+    // ===================================================================
+    // ✅ כתובת ה-Web App שלך משולבת כאן - אין צורך לשנות
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyr01RHOXww8nO72pucyNYaLzu3fZJqxIAhSOa2xVQA62dctcue5pg1br8nMPSxLLM3/exec';
+
+    // הגדרת תאריכי ברירת מחדל: שנה אחורה עד היום (לשיפור חוויית המשתמש)
+    const today = new Date();
+    const oneYearAgo = new Date(new Date().setFullYear(today.getFullYear() - 1));
+    document.getElementById('endDate').value = today.toISOString().split('T')[0];
+    document.getElementById('startDate').value = oneYearAgo.toISOString().split('T')[0];
+
+    // ===================================================================
+    // לוגיקת טיפול בטופס ובשליחה
+    // ===================================================================
+    document.getElementById('stockForm').addEventListener('submit', async (e) => {
+      e.preventDefault(); // מניעת רענון הדף
+
+      const submitBtn = document.getElementById('submitBtn');
+      const statusArea = document.getElementById('statusArea');
+      const tickersInput = document.getElementById('tickers').value.trim();
+
+      // ולידציה קצרה
+      if (!tickersInput) {
+        alert('⚠️ נא להזין לפחות סימול מניה אחד');
+        return;
+      }
+
+      // הכנת אובייקט ה-JSON לפי הפורמט שהשרת מצפה לקבל
+      const payload = {
+        tickers: tickersInput.split(',').map(t => t.trim().toUpperCase()).filter(t => t.length > 0),
+        startDate: document.getElementById('startDate').value,
+        endDate: document.getElementById('endDate').value,
+        frequency: document.getElementById('frequency').value
+      };
+
+      // הגדרת כפתור למצב טעינה
+      const originalBtnHTML = submitBtn.innerHTML;
+      submitBtn.disabled = true;
+      submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
+      submitBtn.innerHTML = `
+        <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <span>טוען נתונים...</span>
+      `;
+      statusArea.classList.add('hidden');
+
+      try {
+        // שליחת הבקשה לשרת
+        // 📌 הגדרת Content-Type כ-'text/plain' מונעת את בקשת ה-CORS Preflight (OPTIONS)
+        // שכן GAS לא תומך בה באופן אוטומטי. השרת יקבל את ה-JSON כמחרוזת ויפרסר אותו בעצמו.
+        const response = await fetch(WEB_APP_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        });
+
+        // קריאת התגובה כ-JSON
+        const data = await response.json();
+
+        // בדיקת שגיאות שהשרת מחזיר
+        if (!response.ok || data.error) {
+          throw new Error(data.error || `שגיאת שרת: ${response.status}`);
+        }
+
+        // הצגת אזור הצלחה עם כפתור גדול לפתיחת הגיליון
+        statusArea.classList.remove('hidden');
+        statusArea.innerHTML = `
+          <div class="p-4 bg-emerald-900/30 border border-emerald-700/50 rounded-xl">
+            <p class="text-emerald-300 font-medium mb-3 text-center">✅ עיבוד הושלם בהצלחה!</p>
+            <a href="${data.sheetUrl}" target="_blank" rel="noopener noreferrer"
+               class="block w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-4 rounded-lg text-center transition-all shadow-lg shadow-emerald-900/40">
+              📄 פתח את הגיליון בגוגל שיטס ↗
+            </a>
+          </div>
+        `;
+
+      } catch (error) {
+        // הצגת הודעת שגיאה גרפית
+        statusArea.classList.remove('hidden');
+        statusArea.innerHTML = `
+          <div class="p-4 bg-red-900/30 border border-red-700/50 rounded-xl">
+            <p class="text-red-300 font-medium text-center">❌ התרחשה שגיאה</p>
+            <p class="text-red-400 text-sm mt-1 text-center break-words">${error.message}</p>
+          </div>
+        `;
+        console.error('Fetch Error:', error);
+      } finally {
+        // החזרת הכפתור למצב הרגיל ללא תלות בתוצאה
+        submitBtn.disabled = false;
+        submitBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+        submitBtn.innerHTML = originalBtnHTML;
+      }
+    });
+  </script>
+</body>
+</html>
