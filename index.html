@@ -3,102 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>מערכת הורדת מניות</title>
+    <title>Stock Reporter | Soft Pink Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         body { 
             font-family: 'Assistant', sans-serif; 
-            /* Soft feminine-futuristic gradient background */
-            background: linear-gradient(135deg, #fffcfd 0%, #f7f9ff 100%);
+            background: linear-gradient(135deg, #fff5f8 0%, #f0f4ff 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
         }
-        /* Glassmorphism panel */
         .glass-panel {
             background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(25px);
+            backdrop-filter: blur(20px);
             border: 1px solid rgba(244, 143, 177, 0.3);
-            box-shadow: 0 25px 65px rgba(236, 64, 122, 0.08);
+            box-shadow: 0 20px 60px rgba(236, 64, 122, 0.15);
         }
-        /* Soft, glowing inputs */
         .input-soft {
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.6);
             border: 1.5px solid #fce4ec;
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .input-soft:focus {
             border-color: #f06292;
-            box-shadow: 0 0 15px rgba(240, 98, 146, 0.2);
+            box-shadow: 0 0 15px rgba(240, 98, 146, 0.25);
             background: white;
             outline: none;
         }
-        /* Gradient action button */
-        .btn-future-pink {
-            background: linear-gradient(45deg, #f06292, #ce93d8);
-            box-shadow: 0 10px 25px rgba(240, 98, 146, 0.3);
+        .btn-pink-future {
+            background: linear-gradient(45deg, #f06292, #ba68c8);
+            box-shadow: 0 10px 20px rgba(240, 98, 146, 0.3);
             transition: all 0.4s ease;
         }
-        .btn-future-pink:hover {
-            transform: translateY(-2px) scale(1.01);
-            box-shadow: 0 15px 35px rgba(240, 98, 146, 0.4);
-            filter: brightness(1.05);
+        .btn-pink-future:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(240, 98, 146, 0.4);
+            filter: brightness(1.08);
         }
-        .btn-future-pink:disabled {
-            filter: grayscale(1);
-            opacity: 0.7;
-            cursor: not-allowed;
-            transform: none;
-        }
-        /* Loading spinner */
-        .loader {
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top: 3px solid #fff;
-            width: 24px;
-            height: 24px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .btn-pink-future:disabled { filter: grayscale(1); opacity: 0.7; }
     </style>
 </head>
 <body class="p-4">
 
-    <div class="max-w-xl w-full glass-panel rounded-[3.5rem] p-10 md:p-14 text-center border border-white/60">
-        
+    <div class="max-w-xl w-full glass-panel rounded-[3.5rem] p-10 md:p-14 text-center border border-white/50">
         <div class="mb-10">
-            <div class="inline-flex p-5 bg-pink-50 rounded-full mb-5 shadow-sm border border-pink-100/60">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-pink-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            <div class="inline-flex p-5 bg-pink-100/50 rounded-full mb-5 shadow-inner border border-pink-200">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-pink-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
             </div>
-            <h1 class="text-3xl md:text-4xl font-bold text-gray-800 tracking-tight">מפיק דוחות פיננסיים</h1>
-            <p class="text-pink-500 font-semibold mt-2 uppercase text-xs tracking-widest opacity-80">הורדה מקומית • נתונים מאומתים</p>
+            <h1 class="text-4xl font-bold text-gray-800 tracking-tight">מפיק דוחות מניות</h1>
+            <p class="text-pink-500 font-semibold mt-2 uppercase text-sm tracking-widest opacity-80">Local Download • Cloud Sync</p>
         </div>
 
         <form id="stockForm" class="space-y-8 text-right" dir="rtl">
             <div>
-                <label class="block text-gray-600 font-bold mb-2 mr-2">סימולי מניות (למשל AAPL, TSLA):</label>
-                <input type="text" id="tickers" placeholder="הפרד בפסיקים..." required
+                <label class="block text-gray-500 font-bold mb-2 mr-1">סימולי מניות (AAPL, TSLA...):</label>
+                <input type="text" id="tickers" placeholder="הפרד בפסיקים" required
                     class="w-full px-6 py-4 rounded-2xl input-soft text-lg font-mono">
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="grid grid-cols-2 gap-6">
                 <div>
-                    <label class="block text-gray-600 font-bold mb-2 mr-2 text-sm">מתאריך:</label>
-                    <input type="date" id="startDate" required class="w-full px-4 py-4 rounded-2xl input-soft text-gray-700">
+                    <label class="block text-gray-500 font-bold mb-2 mr-1 text-sm">מתאריך:</label>
+                    <input type="date" id="startDate" required class="w-full px-4 py-4 rounded-2xl input-soft">
                 </div>
                 <div>
-                    <label class="block text-gray-600 font-bold mb-2 mr-2 text-sm">עד תאריך:</label>
-                    <input type="date" id="endDate" required class="w-full px-4 py-4 rounded-2xl input-soft text-gray-700">
+                    <label class="block text-gray-500 font-bold mb-2 mr-1 text-sm">עד תאריך:</label>
+                    <input type="date" id="endDate" required class="w-full px-4 py-4 rounded-2xl input-soft">
                 </div>
             </div>
 
             <div>
-                <label class="block text-gray-600 font-bold mb-2 mr-2">תדירות נתונים:</label>
-                <select id="frequency" class="w-full px-4 py-4 rounded-2xl input-soft outline-none bg-white/60 cursor-pointer text-gray-700">
+                <label class="block text-gray-500 font-bold mb-2 mr-1">תדירות דגימה:</label>
+                <select id="frequency" class="w-full px-4 py-4 rounded-2xl input-soft outline-none bg-white/40 cursor-pointer">
                     <option value="1d">יומי (Daily)</option>
                     <option value="1wk">שבועי (Weekly)</option>
                     <option value="1mo">חודשי (Monthly)</option>
@@ -106,55 +86,34 @@
             </div>
 
             <button type="submit" id="submitBtn" 
-                class="w-full text-white font-bold py-5 rounded-3xl btn-future-pink text-xl shadow-lg flex justify-center items-center">
-                <span id="btnText">הורד קובץ CSV למחשב</span>
-                <div id="loader" class="hidden mr-3 loader"></div>
+                class="w-full text-white font-bold py-6 rounded-3xl btn-pink-future text-2xl shadow-lg">
+                הורד דוח CSV
             </button>
         </form>
 
-        <p id="statusMsg" class="mt-8 text-pink-500 font-medium hidden animate-pulse bg-pink-50 p-3 rounded-xl border border-pink-100">
-            השרת מעבד את הנתונים, ההורדה תחל באופן אוטומטי...
-        </p>
+        <p id="msg" class="mt-8 text-center text-pink-400 font-medium hidden">מעבד נתונים... הקובץ יורד אוטומטית למחשב</p>
     </div>
 
     <script>
-        // ה-URL החדש והמעודכן לשרת ה-Google Apps Script שלך
-        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwCMbomQyKxryIuGvGhFzV6r1kzIQUFzfO6uXWkwCBhwBu73Ekv71zZIJ5zLBbBQSYb/exec';
+        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbx0UuDAFP-UgrQe4mOZSwZmqs3O-RVWhfb2J3khpI79I8aMYqO7SRgJWWBYxNqa-z9G/exec';
 
         document.getElementById('stockForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submitBtn');
-            const btnText = document.getElementById('btnText');
-            const loader = document.getElementById('loader');
-            const status = document.getElementById('statusMsg');
-
-            let startDateInput = document.getElementById('startDate').value;
-            let endDateInput = document.getElementById('endDate').value;
-
-            // בדיקת ולידציה של תאריכים בצד הלקוח
-            if (new Date(startDateInput) > new Date(endDateInput)) {
-                alert("זיהינו שתאריך ההתחלה מאוחר מתאריך הסיום. המערכת סידרה אותם אוטומטית.");
-                let temp = startDateInput;
-                startDateInput = endDateInput;
-                endDateInput = temp;
-            }
+            const msg = document.getElementById('msg');
 
             const payload = {
                 tickers: document.getElementById('tickers').value.split(',').map(s => s.trim().toUpperCase()),
-                startDate: startDateInput,
-                endDate: endDateInput,
+                startDate: document.getElementById('startDate').value,
+                endDate: document.getElementById('endDate').value,
                 frequency: document.getElementById('frequency').value
             };
 
-            // שינוי מצב כפתור לטעינה
             btn.disabled = true;
-            btnText.innerText = "מושך נתונים...";
-            loader.classList.remove('hidden');
-            status.classList.remove('hidden');
-            status.innerText = "השרת מעבד את הנתונים ומאמת את המניות...";
+            btn.innerText = "מעבד...";
+            msg.classList.remove('hidden');
 
             try {
-                // שליחת הבקשה לשרת
                 const response = await fetch(WEB_APP_URL, {
                     method: 'POST',
                     body: JSON.stringify(payload)
@@ -162,40 +121,33 @@
 
                 const csvData = await response.text();
 
-                // טיפול בשגיאות מהשרת
-                if (csvData.startsWith("Error")) {
-                    alert(csvData);
+                if (csvData.includes("Error")) {
+                    alert("שגיאה מהשרת: " + csvData);
                 } else {
-                    // יצירת קובץ CSV להורדה מקומית ישירות בדפדפן
                     const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
                     const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement("a");
-                    a.style.display = "none";
+                    const a = document.createElement('a');
                     a.href = url;
-                    a.download = `Stock_Report_${new Date().toISOString().split('T')[0]}.csv`;
+                    a.download = `Report_${payload.tickers[0]}_${new Date().toLocaleDateString()}.csv`;
                     document.body.appendChild(a);
                     a.click();
                     window.URL.revokeObjectURL(url);
-                    
-                    status.innerText = "ההורדה הושלמה בהצלחה! בדוק את תיקיית ההורדות שלך.";
                 }
             } catch (err) {
-                alert("אירעה שגיאת תקשורת. וודא שהסקריפט מוגדר נכון ושאישרת הרשאות.");
+                alert("אירעה שגיאה. וודא שהסקריפט מפורסם ב-Deploy כ-Anyone.");
             } finally {
-                // איפוס ממשק
                 btn.disabled = false;
-                btnText.innerText = "הורד קובץ CSV למחשב";
-                loader.classList.add('hidden');
-                setTimeout(() => status.classList.add('hidden'), 4000);
+                btn.innerText = "הורד דוח CSV";
+                msg.classList.add('hidden');
             }
         });
 
-        // תאריכי ברירת מחדל בעת טעינת האתר (חצי שנה אחורה)
-        const today = new Date();
-        document.getElementById('endDate').value = today.toISOString().split('T')[0];
-        const lastSixMonths = new Date();
-        lastSixMonths.setMonth(today.getMonth() - 6);
-        document.getElementById('startDate').value = lastSixMonths.toISOString().split('T')[0];
+        // הגדרת תאריכי ברירת מחדל
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('endDate').value = today;
+        const lastYear = new Date();
+        lastYear.setFullYear(lastYear.getFullYear() - 1);
+        document.getElementById('startDate').value = lastYear.toISOString().split('T')[0];
     </script>
 </body>
 </html>
